@@ -1,0 +1,164 @@
+<div class="container-fluid">
+  <br />
+  <div class="row">
+    <div class="col d-flex justify-content-center">
+      <h4 class="display-4">Listado de Asistencias</h4>
+    </div>
+  </div>
+  <br />
+  <div class="row d-flex justify-content-center">
+    <form  [formGroup]="form" (ngSubmit)="search(form)">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-2">
+            <label for="selectCategories">Categoria:</label>
+          </div>
+          <div class="col-sm">
+            <select class="form-control mb-2 mr-sm-2" id="selectCategories" name="selectCategories"
+              formControlName="categoryId">
+              <option value="">Todas las categorias</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{category.name}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-2">
+            <label for="fromDate">Desde:</label>
+          </div>
+          <div class="col-sm-4">
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="fromDate" [(ngModel)]="modelFromDate" ngbDatepicker
+                #fromDate="ngbDatepicker" formControlName="fromDate">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="fromDate.toggle()" type="button">
+                  <i class="far fa-calendar-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <label for="toDate">Hasta:</label>
+          </div>
+          <div class="col-sm-4">
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="toDate" [(ngModel)]="modelToDate" ngbDatepicker
+                #toDate="ngbDatepicker" formControlName="toDate">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calendar" (click)="toDate.toggle()" type="button">
+                  <i class="far fa-calendar-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-10">
+
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-primary" style="margin-top:10%">
+              Listar <i class="fas fa-list"></i>
+            </button>
+          </div>
+        </div>
+        <br/>
+      </div>
+    </form>
+  </div>
+
+  <div class="row d-flex justify-content-center" *ngIf="this.athletesAssistances.length > 0" >
+    <div class="form-inline">
+      <label for="checkAllDate" class="mr-sm-2">Check-multiple:</label>
+      <div class="input-group mb-2 mr-sm-2">
+        <input class="form-control" placeholder="yyyy-mm-dd" name="checkAllDate" [(ngModel)]="modelCheckAllDate" ngbDatepicker
+          #toDate="ngbDatepicker">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary calendar" (click)="toDate.toggle()" type="button">
+            <i class="far fa-calendar-alt"></i>
+          </button>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-primary mb-2 mr-sm-2" (click)="multipleSelection('add')">
+        Agregar
+      </button>
+      <button type="button" class="btn btn-outline-danger mb-2 mr-sm-2" (click)="multipleSelection('delete')">
+        Eliminar
+      </button>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <p *ngIf ="isFetching">Cargando Lista...</p>
+    <div *ngIf="!isFetching">
+      <table class="table table-striped table-hover table-responsive-sm ">
+        <thead>
+          <tr>
+            <th scope="col" *ngIf="this.athletesAssistances.length > 0">
+              <input type="checkbox" (change)="CheckAll($event)" [(ngModel)]="headerCheckbox">
+            </th>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Asistencias</th>
+            <th scope="col">Porcentaje</th>
+            <th scope="col">Accion (asistencia)</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let athlete of athletesAssistances; index as i">
+            <td>
+              <input type="checkbox"  value="ahtlete.id" [(ngModel)]="athlete.checked">
+            </td>
+            <th scope="row">{{ i + 1 }}</th>
+            <td>
+              {{ athlete.name }}
+            </td>
+            <td>
+              {{ athlete.lastName }}
+            </td>
+            <td>
+              {{athlete.category}}
+            </td>
+            <td>
+              {{athlete.assistances}}
+            </td>
+            <td>
+              {{athlete.percentage}} %
+            </td>
+            <td>
+              <div class="btn-group">
+                <button type="button" class="btn" (click)="openModal(athlete, 'view')" style="margin-right: 15%;">
+                  <a data-toggle="tooltip" title="ver asistencias"><u><i class="fa fa-eye" style="color:green"></i></u></a>
+                </button>
+                <button type="button" class="btn" (click)="openModal(athlete,'create')">
+                  <a data-toggle="tooltip" title="nueva asistencia"><u><i class="far fa-calendar-plus" style="color:blue"></i></u></a>
+                </button>
+              </div>
+            </td>
+            <!-- <td (click)="openModal(athlete, 'view')" style="cursor: pointer;">
+              <a><u><i class="fa fa-eye" style="color:green"></i></u></a>
+            </td>
+            <td (click)="openModal(athlete,'create')" style="cursor: pointer;">
+              <a><u><i class="far fa-calendar-plus" style="color:blue"></i></u></a>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="btn-group btn-group-toggle p-2 ml-auto" *ngIf="this.athletesAssistances.length > 0">
+    </div>
+    <!-- <div class="btn-group btn-group-toggle p-2 ml-auto">
+      <button type="button" class="btn btn-outline-primary">
+        Exportar planilla <i class="fab fa-google-drive"></i>
+      </button>
+    </div> -->
+  </div>
+  <br />
+
+</div>
+
